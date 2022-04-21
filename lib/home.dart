@@ -38,6 +38,42 @@ class _HomeState extends State<Home> {
         });
   }
 
+  Widget _taskList() {
+    return ReorderableListView(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      proxyDecorator: (Widget child, int index, Animation<double> animation) {
+        return TaskTile(_items, itemIndex: index, onDeleted: () {});
+      },
+      children: <Widget>[
+        for (int index = 0; index < _items.length; index += 1)
+          Padding(
+            key: Key('${index}'),
+            padding: const EdgeInsets.all(8.0),
+            child: TaskTile(
+              _items,
+              itemIndex: index,
+              onDeleted: () {
+                setState(() {
+                  _items.removeAt(index);
+                });
+              },
+            ),
+          ),
+      ],
+
+      //위치를 변경해줄때마다 index도 제 위치로 변경
+      onReorder: (int oldIndex, int newIndex) {
+        setState(() {
+          if (oldIndex < newIndex) {
+            newIndex -= 1;
+          }
+          final Task item = _items.removeAt(oldIndex);
+          _items.insert(newIndex, item);
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,39 +92,7 @@ class _HomeState extends State<Home> {
           _showDialog();
         },
       ),
-      body: ReorderableListView(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-        proxyDecorator: (Widget child, int index, Animation<double> animation) {
-          return TaskTile(_items, itemIndex: index, onDeleted: () {});
-        },
-        children: <Widget>[
-          for (int index = 0; index < _items.length; index += 1)
-            Padding(
-                key: Key('${index}'),
-                padding: const EdgeInsets.all(8.0),
-                child: TaskTile(
-                  _items,
-                  itemIndex: index,
-                  onDeleted: (){
-                    setState(() {
-                      _items.removeAt(index);
-                    });
-                  },
-                ),
-            ),
-        ],
-
-        //위치를 변경해줄때마다 index도 제 위치로 변경
-        onReorder: (int oldIndex, int newIndex){
-          setState(() {
-            if(oldIndex < newIndex){
-              newIndex -= 1;
-            }
-            final Task item = _items.removeAt(oldIndex);
-            _items.insert(newIndex, item);
-          });
-        },
-      ),
+      body: _taskList(),
     );
   }
 }
