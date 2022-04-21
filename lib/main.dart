@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:simple_todo_app/home.dart';
+import 'package:simple_todo_app/models/task.dart';
 
-void main() {
+void main() async{
+  await Hive.initFlutter();
+  //어댑터를 레지스터에 등록
+  Hive.registerAdapter(TaskAdapter());
+
   runApp(const MyApp());
 }
 
