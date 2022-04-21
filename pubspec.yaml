@@ -35,7 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   hive: ^2.1.0
-  hive_flutter: ^1.1.0
+  hive_flutter: ^1.1.0  # 어디에 database가 저장되는지의 부분에서 도움을 주는 것
 
 
 dev_dependencies:
@@ -48,6 +48,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  hive_generator: ^1.1.2  # flutter와 database를 연결해주는 어댑터를 자동으로 생성해주는 부분을 해결해줌
+  build_runner: ^2.1.10
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
