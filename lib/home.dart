@@ -78,13 +78,14 @@ class _HomeState extends State<Home> {
             ),
         ],
 
-        //index만 줄여주면 알아서 정렬해주겠다.인듯
+        //위치를 변경해줄때마다 index도 제 위치로 변경
         onReorder: (int oldIndex, int newIndex){
           setState(() {
             if(oldIndex < newIndex){
               newIndex -= 1;
             }
             final Task item = _items.removeAt(oldIndex);
+            _items.insert(newIndex, item);
           });
         },
       ),

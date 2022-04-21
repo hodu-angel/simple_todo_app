@@ -31,6 +31,7 @@ class _TaskTileState extends State<TaskTile> {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: item.finished ? Colors.grey : eventItemColor,
+          borderRadius: BorderRadius.circular(10),
         ),
         duration: const Duration(milliseconds: 300),
         curve: Curves.fastOutSlowIn,
@@ -57,6 +58,7 @@ class _TaskTileState extends State<TaskTile> {
               ),
             ),
             IconButton(
+              padding: const EdgeInsets.only(right: 20),
               onPressed: () => widget.onDeleted(),
               icon: const Icon(
                 Icons.delete,
