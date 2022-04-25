@@ -33,6 +33,8 @@
 import 'package:hive/hive.dart';
 part 'task.g.dart';
 
+//HiveObject를 extends하면 Object 자체에서 update, delete를 해줄 수 있다.
+
 @HiveType(typeId: 0)
 class Task extends HiveObject{
   @HiveField(0)

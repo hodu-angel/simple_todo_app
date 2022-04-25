@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_todo_app/hive_helper.dart';
 import 'package:simple_todo_app/models/task.dart';
 import 'package:simple_todo_app/pages/task_list.dart';
 
@@ -25,7 +26,8 @@ class _HomeState extends State<Home> {
               ),
               onSubmitted: (String text) {
                 setState(() {
-                  _items.add(Task(title: text));
+                  HiveHelper().create(Task(title: text));
+                  //_items.add(Task(title: text));
                 });
                 Navigator.of(context).pop(); //Navigator.pop() 비교
                 //Navigator.pop()이 내부적으로 Navigator.of(context).pop()를 호출한다.
@@ -38,23 +40,22 @@ class _HomeState extends State<Home> {
         });
   }
 
-  Widget _taskList() {
+  Widget _taskList(List<Task> tasks) {
     return ReorderableListView(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       proxyDecorator: (Widget child, int index, Animation<double> animation) {
-        return TaskTile(_items, itemIndex: index, onDeleted: () {});
+        return TaskTile(task: tasks[index], onDeleted: () {});
       },
       children: <Widget>[
-        for (int index = 0; index < _items.length; index += 1)
+        for (int index = 0; index < tasks.length; index += 1)
           Padding(
             key: Key('${index}'),
             padding: const EdgeInsets.all(8.0),
             child: TaskTile(
-              _items,
-              itemIndex: index,
+              task: tasks[index],
               onDeleted: () {
                 setState(() {
-                  _items.removeAt(index);
+                  //tasks.removeAt(index);
                 });
               },
             ),
@@ -62,13 +63,17 @@ class _HomeState extends State<Home> {
       ],
 
       //위치를 변경해줄때마다 index도 제 위치로 변경
-      onReorder: (int oldIndex, int newIndex) {
+      onReorder: (int oldIndex, int newIndex) async{
+        if (oldIndex < newIndex) {
+          newIndex -= 1;
+        }
+
+        await HiveHelper().reorder(oldIndex, newIndex);
+
         setState(() {
-          if (oldIndex < newIndex) {
-            newIndex -= 1;
-          }
-          final Task item = _items.removeAt(oldIndex);
-          _items.insert(newIndex, item);
+          //final Task item = tasks.removeAt(oldIndex);
+          //hive에는 insert가 없다.
+          //tasks.insert(newIndex, item);
         });
       },
     );
@@ -76,23 +81,30 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'To do List',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 30,
+    return FutureBuilder<List<Task>>(
+      future: HiveHelper().read(),
+      builder: (context, snapshot) {
+        List<Task> tasks = snapshot.data ?? [];
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'To do List',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+              ),
+            ),
           ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          _showDialog();
-        },
-      ),
-      body: _taskList(),
+          floatingActionButton: FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () {
+              _showDialog();
+            },
+          ),
+          body: _taskList(tasks),
+        );
+      }
     );
   }
 }

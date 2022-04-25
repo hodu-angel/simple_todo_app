@@ -15,6 +15,20 @@ class HiveHelper {
 
   Box<Task>? tasksBox;
 
+  //insert기능이 없어서 만든다.
+  //TaskBox안에있는 모든 데이터를 캐시쪽으로 가져올것이다.
+  //1개의 key에는 1개의 박스만 들어간다.
+  Future<void> reorder(int oldIndex, int newIndex) async{
+    List<Task> newList = [];
+    newList.addAll(tasksBox!.values);
+
+    final Task item = newList.removeAt(oldIndex);
+    newList.insert(newIndex, item);
+    await tasksBox!.clear();
+    await tasksBox!.addAll(newList);
+    //return;
+  }
+
   //박스에 담을 준비
   Future openBox() async {
     tasksBox = await Hive.openBox(TASK_BOX);
